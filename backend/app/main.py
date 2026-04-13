@@ -75,11 +75,31 @@ def analyze_with_gemini(resume_text: str, job_description: str) -> dict[str, Any
     model = genai.GenerativeModel(GEMINI_MODEL)
     prompt = f"""
 Analyze this resume against this job description.
-Return only a valid JSON object with:
-- "score": integer from 0 to 100
-- "matches": array of strings
-- "gaps": array of strings
-- "verdict": short summary string
+Return only a valid JSON object with exactly this schema:
+{{
+  "overall_score": 0,
+  "core_skills": {{
+    "matches": [],
+    "gaps": [],
+    "score": 0
+  }},
+  "soft_skills": {{
+    "matches": [],
+    "gaps": [],
+    "score": 0
+  }},
+  "critical_weakness": "The single most important reason why this CV might be rejected.",
+  "action_plan": ["Specific advice on what to add to the CV"]
+}}
+
+Classification rules:
+- "core_skills" means technical, domain, platform, tooling, certifications, and other hard-skill requirements.
+- "soft_skills" means communication, collaboration, leadership, stakeholder management, ownership, adaptability, and process-oriented strengths or gaps.
+- Keep every list item concise and specific.
+- "critical_weakness" must be a single sentence.
+- "action_plan" must contain concrete CV improvement steps.
+- All score values must be integers from 0 to 100.
+- Do not wrap the JSON in markdown fences.
 
 Resume:
 {resume_text}
@@ -96,14 +116,7 @@ Job Description:
     raw_text = getattr(response, "text", "") or ""
     parsed = parse_gemini_json(raw_text)
 
-    if not isinstance(parsed.get("score"), int):
-        raise HTTPException(status_code=502, detail="Gemini response did not include an integer score.")
-
-    parsed["score"] = max(0, min(100, parsed["score"]))
-    parsed["matches"] = normalize_string_list(parsed.get("matches"))
-    parsed["gaps"] = normalize_string_list(parsed.get("gaps"))
-    parsed["verdict"] = str(parsed.get("verdict", "")).strip()
-    return parsed
+    return normalize_analysis_payload(parsed)
 
 
 def parse_gemini_json(raw_text: str) -> dict[str, Any]:
@@ -127,6 +140,40 @@ def normalize_string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item).strip() for item in value if str(item).strip()]
+
+
+def normalize_analysis_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "overall_score": clamp_score(payload.get("overall_score")),
+        "core_skills": normalize_skill_bucket(payload.get("core_skills")),
+        "soft_skills": normalize_skill_bucket(payload.get("soft_skills")),
+        "critical_weakness": normalize_sentence(payload.get("critical_weakness")),
+        "action_plan": normalize_string_list(payload.get("action_plan")),
+    }
+
+
+def normalize_skill_bucket(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        value = {}
+
+    return {
+        "matches": normalize_string_list(value.get("matches")),
+        "gaps": normalize_string_list(value.get("gaps")),
+        "score": clamp_score(value.get("score")),
+    }
+
+
+def clamp_score(value: Any) -> int:
+    try:
+        score = int(value)
+    except (TypeError, ValueError):
+        return 0
+    return max(0, min(100, score))
+
+
+def normalize_sentence(value: Any) -> str:
+    text = str(value or "").strip()
+    return text
 
 
 async def resolve_job_description(job_description: str, job_url: str) -> str:

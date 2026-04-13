@@ -4,8 +4,22 @@ React + Vite + Tailwind frontend and FastAPI backend for comparing a resume PDF 
 
 ## Structure
 
-- `frontend/`: React client with upload form, job description mode selector, and assessment dashboard
-- `backend/`: FastAPI API that extracts PDF text via PyMuPDF, optionally extracts job text from a URL, and calls Gemini
+- `frontend/`: React client with upload form, job source selector, categorized fit dashboard, loading state, and animated scores
+- `backend/`: FastAPI API that extracts PDF text via PyMuPDF, optionally extracts job text from a URL, and asks Gemini for categorized skill analysis
+
+## Analysis response shape
+
+The backend normalizes the Gemini response into this structure:
+
+```json
+{
+  "overall_score": 0,
+  "core_skills": { "matches": [], "gaps": [], "score": 0 },
+  "soft_skills": { "matches": [], "gaps": [], "score": 0 },
+  "critical_weakness": "The single most important reason why this CV might be rejected.",
+  "action_plan": ["Specific advice on what to add to the CV"]
+}
+```
 
 ## Backend setup
 
