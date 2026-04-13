@@ -164,7 +164,7 @@ function App() {
                   {isLoading ? "Analyzing CV fit..." : "Run Assessment"}
                 </button>
                 {resumeFile ? (
-                  <p className="text-sm text-slate-300">{resumeFile.name}</p>
+                  <p className="text-sm text-slate-300">Ready to analyze the selected resume.</p>
                 ) : (
                   <p className="text-sm text-slate-400">No file selected.</p>
                 )}
@@ -340,11 +340,11 @@ function SkillPanel({ title, description, bucket, tone }) {
   return (
     <section className={`rounded-[28px] border ${toneClasses.border} bg-white/5 p-6`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm uppercase tracking-[0.2em] text-slate-400">{title}</p>
           <p className="mt-3 text-sm leading-6 text-slate-300">{description}</p>
         </div>
-        <div className={`rounded-3xl border px-5 py-4 text-center ${toneClasses.chip}`}>
+        <div className={`shrink-0 rounded-3xl border px-5 py-4 text-center ${toneClasses.chip}`}>
           <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Score</p>
           <p className="mt-2 text-3xl font-semibold">
             <AnimatedPercentage value={bucket.score} />
@@ -352,7 +352,7 @@ function SkillPanel({ title, description, bucket, tone }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-6 space-y-6">
         <StatusList
           emptyText={matchesEmptyText}
           icon="check"
