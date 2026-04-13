@@ -10,6 +10,7 @@ const initialBucket = {
 
 const initialResult = {
   overall_score: null,
+  ats_score: null,
   core_skills: initialBucket,
   soft_skills: initialBucket,
   critical_weakness: "",
@@ -69,6 +70,7 @@ function App() {
 
       setResult({
         overall_score: payload.overall_score ?? 0,
+        ats_score: payload.ats_score ?? 0,
         core_skills: normalizeBucket(payload.core_skills),
         soft_skills: normalizeBucket(payload.soft_skills),
         critical_weakness: payload.critical_weakness ?? "",
@@ -188,7 +190,10 @@ function App() {
                   likely rejection risks easier to spot.
                 </p>
               </div>
-              <ScoreCard label="Overall Match" score={result.overall_score} tone="overall" />
+              <div className="flex flex-wrap gap-4">
+                <ScoreCard label="Overall Match" score={result.overall_score} tone="overall" />
+                <ScoreCard label="ATS Score" score={result.ats_score} tone="ats" />
+              </div>
             </div>
 
             {isLoading ? (
@@ -288,7 +293,7 @@ function LoadingPanel() {
         <div>
           <p className="text-lg font-semibold text-white">AI is analyzing the CV now</p>
           <p className="mt-1 text-sm text-slate-300">
-            Reviewing hard-skill alignment, soft-skill signals, and the most important weaknesses.
+            Reviewing ATS alignment, hard-skill coverage, soft-skill signals, and the most important weaknesses.
           </p>
         </div>
       </div>
@@ -308,12 +313,7 @@ function Spinner({ large = false }) {
 
 function ScoreCard({ label, score, tone }) {
   const displayScore = useCountUp(score);
-  const colorClass =
-    tone === "overall"
-      ? "text-cyan-200"
-      : tone === "core"
-        ? "text-emerald-200"
-        : "text-sky-200";
+  const colorClass = tone === "ats" ? "text-amber-200" : "text-cyan-200";
 
   return (
     <div className="rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-center">

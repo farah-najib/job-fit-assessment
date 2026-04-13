@@ -14,12 +14,18 @@ The backend normalizes the Gemini response into this structure:
 ```json
 {
   "overall_score": 0,
+  "ats_score": 0,
   "core_skills": { "matches": [], "gaps": [], "score": 0 },
   "soft_skills": { "matches": [], "gaps": [], "score": 0 },
   "critical_weakness": "The single most important reason why this CV might be rejected.",
   "action_plan": ["Specific advice on what to add to the CV"]
 }
 ```
+
+## UI features
+
+- ATS score displayed alongside the overall match score
+- Dual-column skill comparison with animated percentages
 
 ## Backend setup
 

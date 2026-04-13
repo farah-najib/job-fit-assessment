@@ -78,6 +78,7 @@ Analyze this resume against this job description.
 Return only a valid JSON object with exactly this schema:
 {{
   "overall_score": 0,
+  "ats_score": 0,
   "core_skills": {{
     "matches": [],
     "gaps": [],
@@ -95,6 +96,7 @@ Return only a valid JSON object with exactly this schema:
 Classification rules:
 - "core_skills" means technical, domain, platform, tooling, certifications, and other hard-skill requirements.
 - "soft_skills" means communication, collaboration, leadership, stakeholder management, ownership, adaptability, and process-oriented strengths or gaps.
+- "ats_score" should estimate how well the CV would perform in an ATS screen based on keyword coverage, role-title alignment, clarity, and standard formatting signals.
 - Keep every list item concise and specific.
 - "critical_weakness" must be a single sentence.
 - "action_plan" must contain concrete CV improvement steps.
@@ -145,6 +147,7 @@ def normalize_string_list(value: Any) -> list[str]:
 def normalize_analysis_payload(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "overall_score": clamp_score(payload.get("overall_score")),
+        "ats_score": clamp_score(payload.get("ats_score")),
         "core_skills": normalize_skill_bucket(payload.get("core_skills")),
         "soft_skills": normalize_skill_bucket(payload.get("soft_skills")),
         "critical_weakness": normalize_sentence(payload.get("critical_weakness")),
