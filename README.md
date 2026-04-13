@@ -3,12 +3,14 @@
 React + Vite + Tailwind frontend with two backend options:
 - `backend/`: FastAPI implementation
 - `backend-node/`: Node.js + Express implementation
+- `electron-app/`: Electron desktop app with local BYOK key storage and secure IPC
 
 ## Structure
 
 - `frontend/`: React client with upload form, job source selector, categorized fit dashboard, loading state, and animated scores
 - `backend/`: FastAPI API that extracts PDF text via PyMuPDF, optionally extracts job text from a URL, and asks Gemini for categorized skill analysis
 - `backend-node/`: Express API that extracts PDF text via `pdf-parse`, optionally extracts job text from a URL, and asks Gemini for the same categorized analysis
+- `electron-app/`: Electron main/preload processes plus a React renderer, local key validation via `electron-store`, and desktop-side Gemini/PDF analysis
 
 ## Analysis response shape
 
@@ -70,3 +72,17 @@ npm run dev
 ```
 
 `frontend/.env` can override `VITE_API_BASE_URL` if the API is not running on `http://localhost:3001`.
+
+## Electron desktop app setup
+
+```bash
+cd electron-app
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Notes:
+- The desktop app stores the Gemini API key locally in `electron-store` after a successful `Test & Save` verification call.
+- The app stays locked on the Settings view until a valid key is saved.
+- All renderer-to-backend communication goes through `ipcMain` and `ipcRenderer` via the preload `contextBridge`.

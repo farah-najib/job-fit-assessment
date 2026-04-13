@@ -7,3 +7,9 @@ __pycache__/
 .env
 frontend/.env
 backend/.env
+backend-node/.env
+backend-node/node_modules/
+electron-app/node_modules/
+electron-app/dist/
+electron-app/dist-electron/
+electron-app/.env
