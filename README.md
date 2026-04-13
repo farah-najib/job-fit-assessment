@@ -1,11 +1,14 @@
 # Job Fit Assessment MVP
 
-React + Vite + Tailwind frontend and FastAPI backend for comparing a resume PDF against a pasted job description or a job-posting URL using Gemini.
+React + Vite + Tailwind frontend with two backend options:
+- `backend/`: FastAPI implementation
+- `backend-node/`: Node.js + Express implementation
 
 ## Structure
 
 - `frontend/`: React client with upload form, job source selector, categorized fit dashboard, loading state, and animated scores
 - `backend/`: FastAPI API that extracts PDF text via PyMuPDF, optionally extracts job text from a URL, and asks Gemini for categorized skill analysis
+- `backend-node/`: Express API that extracts PDF text via `pdf-parse`, optionally extracts job text from a URL, and asks Gemini for the same categorized analysis
 
 ## Analysis response shape
 
@@ -27,7 +30,7 @@ The backend normalizes the Gemini response into this structure:
 - ATS score displayed alongside the overall match score
 - Dual-column skill comparison with animated percentages
 
-## Backend setup
+## Python backend setup
 
 ```bash
 cd backend
@@ -43,6 +46,20 @@ Set `GEMINI_MODEL` if you want to override the default model. The default is `ge
 
 If the user provides a job URL instead of pasted text, the backend fetches the page and extracts visible text before sending it to Gemini.
 
+## Node backend setup
+
+```bash
+cd backend-node
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Set `GEMINI_API_KEY` in `backend-node/.env`.
+Set `GEMINI_MODEL` if you want to override the default model. The default is `gemini-flash-latest`.
+
+The Node backend runs on `http://localhost:3001` by default.
+
 ## Frontend setup
 
 ```bash
@@ -52,4 +69,4 @@ cp .env.example .env
 npm run dev
 ```
 
-`frontend/.env` can override `VITE_API_BASE_URL` if the API is not running on `http://localhost:8000`.
+`frontend/.env` can override `VITE_API_BASE_URL` if the API is not running on `http://localhost:3001`.
