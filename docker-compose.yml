@@ -1,0 +1,31 @@
+services:
+  backend-node:
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      - GEMINI_API_KEY=backend-node/.env
+      - GEMINI_MODEL=gemini-flash-latest
+      - CORS_ORIGIN=http://localhost:8080
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:3001
+    ports:
+      - '8080:80'
+    depends_on:
+      - backend-node
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

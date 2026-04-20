@@ -1,6 +1,7 @@
 # Job Fit Assessment MVP
 
 React + Vite + Tailwind frontend with two backend options:
+
 - `backend/`: FastAPI implementation
 - `backend-node/`: Node.js + Express implementation
 - `electron-app/`: Electron desktop app with local BYOK key storage and secure IPC
@@ -73,16 +74,39 @@ npm run dev
 
 `frontend/.env` can override `VITE_API_BASE_URL` if the API is not running on `http://localhost:3001`.
 
+## Docker setup
+
+You can run the entire application (Frontend + Node Backend) using Docker Compose.
+
+1. Ensure you have your `GEMINI_API_KEY` available.
+2. Run the following command from the root directory:
+
+```bash
+GEMINI_API_KEY=your_key_here docker-compose up --build
+```
+
+Alternatively, create a `.env` file in the root directory with your `GEMINI_API_KEY`:
+
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- Frontend: `http://localhost:8080`
+- Backend: `http://localhost:3001`
+
+The Docker setup uses a multi-stage build for the frontend to serve static files efficiently via Nginx and passes the necessary environment variables to both services.
+
 ## Electron desktop app setup
 
 ```bash
 cd electron-app
 npm install
-cp .env.example .env
 npm run dev
 ```
 
 Notes:
+
 - The desktop app stores the Gemini API key locally in `electron-store` after a successful `Test & Save` verification call.
 - The app stays locked on the Settings view until a valid key is saved.
 - All renderer-to-backend communication goes through `ipcMain` and `ipcRenderer` via the preload `contextBridge`.
